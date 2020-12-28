@@ -136,6 +136,10 @@ firebaseui.auth.AuthUI = function(auth, opt_appId) {
   if (this.tempAuth_.setPersistence) {
     this.tempAuth_.setPersistence(firebase.auth.Auth.Persistence.SESSION);
   }
+  // Change emulator settings to respect the existing configuration.
+  if (this.tempAuth_.useEmulator && auth.getEmulatorConfig) {
+    this.tempAuth_.useEmulator(auth.getEmulatorConfig().url);
+  }
   /** @private {string|undefined} The optional app id. */
   this.appId_ = opt_appId;
   /** @private {!firebaseui.auth.widget.Config} The AuthUI configuration. */
