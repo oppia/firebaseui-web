@@ -129,6 +129,10 @@ firebaseui.auth.AuthUI = function(auth, opt_appId) {
    *     instance.
    */
   this.tempAuth_ = tempApp.auth();
+  // Workaround for: https://github.com/firebase/firebaseui-web/issues/778.
+  if (this.tempAuth_.useEmulator && this.auth_.getEmulatorConfig) {
+    this.tempAuth_.useEmulator(this.auth_.getEmulatorConfig().url);
+  }
   // Log FirebaseUI on internal Auth instance.
   firebaseui.auth.AuthUI.logFirebaseUI_(this.tempAuth_);
   // Change persistence to session to avoid the risk of dangling auth states in
