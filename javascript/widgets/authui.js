@@ -128,7 +128,11 @@ firebaseui.auth.AuthUI = function(auth, opt_appId) {
    * @private {!firebase.auth.Auth} The temporary internal Firebase Auth
    *     instance.
    */
-  this.tempAuth_ = tempApp.auth();
+  // HACK BEGIN
+  // https://github.com/firebase/firebaseui-web/issues/778#issuecomment-744159663
+  // this.tempAuth_ = tempApp.auth(); // FIXME
+  this.tempAuth_ = auth['app'];
+  // HACK END
   // Log FirebaseUI on internal Auth instance.
   firebaseui.auth.AuthUI.logFirebaseUI_(this.tempAuth_);
   // Change persistence to session to avoid the risk of dangling auth states in
@@ -971,16 +975,23 @@ firebaseui.auth.AuthUI.prototype.delete = function() {
   // Check if instance is already destroyed.
   this.checkIfDestroyed_();
   // Delete the temporary app instance.
-  return this.tempAuth_.app.delete().then(function() {
-    // Get instance key.
-    var key = firebaseui.auth.AuthUI.getInstanceKey_(self.getAppId());
-    // Delete any saved AuthUI instance.
-    delete firebaseui.auth.AuthUI.instances_[key];
-    // Reset current instance.
-    self.reset();
-    // Mark as deleted.
-    self.deleted_ = true;
-  });
+  // HACK BEGIN
+  // https://github.com/firebase/firebaseui-web/issues/778#issuecomment-744159663
+  // return this.tempAuth_.app.delete().then(function() { // FIXME
+  // HACK END
+  // Get instance key.
+  var key = firebaseui.auth.AuthUI.getInstanceKey_(self.getAppId());
+  // Delete any saved AuthUI instance.
+  delete firebaseui.auth.AuthUI.instances_[key];
+  // Reset current instance.
+  self.reset();
+  // Mark as deleted.
+  self.deleted_ = true;
+  // HACK BEGIN
+  // https://github.com/firebase/firebaseui-web/issues/778#issuecomment-744159663
+  // }); // FIXME
+  return firebase.Promise.resolve();
+  // HACK END
 };
 
 
